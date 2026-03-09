@@ -346,8 +346,17 @@ function useCountdown(target: Date) {
       seconds: Math.floor((diff % 60000) / 1000),
     }
   }
-  const [t, setT] = useState(calc)
-  useEffect(() => { const id = setInterval(() => setT(calc()), 1000); return () => clearInterval(id) }, [])
+
+  // Avoid hydration mismatch by rendering a deterministic value on the server,
+  // then updating on the client once we can read the correct time.
+  const [t, setT] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+
+  useEffect(() => {
+    setT(calc())
+    const id = setInterval(() => setT(calc()), 1000)
+    return () => clearInterval(id)
+  }, [target])
+
   return t
 }
 
