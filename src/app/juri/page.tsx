@@ -1,10 +1,10 @@
 // ─── src/app/juri/page.tsx ────────────────────────────────────────────────────
-// İçerik eklenecek: Jüri kartları (isim, kurum, uzmanlık, LinkedIn) + sponsorlar
+// İçerik eklenecek: Jüri kartları (isim, kurum, uzmanlık, LinkedIn)
 
 export default function JuriPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-20">
-      <h1 className="text-4xl font-black text-gray-900 mb-4">Jüri & Sponsorlar</h1>
+      <h1 className="text-4xl font-black text-gray-900 mb-4">Jüri</h1>
       <p className="text-gray-400">[İçerik eklenecek]</p>
     </div>
   )
