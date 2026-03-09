@@ -531,35 +531,50 @@ export default function BasvuruPage() {
               </motion.div>
 
               {/* CTA */}
-              <div style={{height:64, display:"flex", alignItems:"center"}}>
-                <AnimatePresence>
-                  {pill ? (
-                    <motion.button key="cta"
-                      initial={{opacity:0,y:8,scale:0.96}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:6}}
-                      transition={{duration:0.3}}
-                      onClick={() => setStep(1)}
-                      style={{
-                        display:"flex", alignItems:"center", gap:20,
-                        padding:"14px 20px 14px 28px", backgroundColor:"#0f172a",
-                        color:"white", border:"none", borderRadius:16,
-                        fontSize:13, fontWeight:700, letterSpacing:"0.16em", textTransform:"uppercase",
-                        cursor:"pointer", fontFamily:"inherit",
-                        boxShadow:"0 8px 32px rgba(15,23,42,0.22)",
-                      }}
-                    >
-                      <span>Devam Et</span>
-                      <div style={{ width:38, height:38, borderRadius:10, backgroundColor:"rgba(255,255,255,0.12)",
-                        display:"flex", alignItems:"center", justifyContent:"center" }}>
-                        <ArrowRight size={17} strokeWidth={2.5} />
-                      </div>
-                    </motion.button>
-                  ) : (
-                    <motion.p key="hint" initial={{opacity:0}} animate={{opacity:0.4}} exit={{opacity:0}}
-                      style={{fontSize:11,color:"#64748b",letterSpacing:"0.3em",textTransform:"uppercase",fontWeight:600}}>
-                      ← seçim yap →
-                    </motion.p>
-                  )}
-                </AnimatePresence>
+              <div style={{ height:72, display:"flex", alignItems:"center", justifyContent:"center", position:"relative" }}>
+                {/* Hint — pill seçilmeden */}
+                <motion.p
+                  animate={{ opacity: pill ? 0 : 0.38, scale: pill ? 0.9 : 1 }}
+                  transition={{ duration:0.25 }}
+                  style={{
+                    position:"absolute",
+                    fontSize:11, color:"#64748b",
+                    letterSpacing:"0.3em", textTransform:"uppercase", fontWeight:600,
+                    margin:0, pointerEvents:"none", userSelect:"none",
+                    whiteSpace:"nowrap",
+                  }}
+                >← seçim yap →</motion.p>
+
+                {/* Devam Et butonu */}
+                <motion.button
+                  animate={{
+                    opacity: pill ? 1 : 0,
+                    scale: pill ? 1 : 0.88,
+                    y: pill ? 0 : 10,
+                    pointerEvents: pill ? "auto" : "none",
+                  }}
+                  transition={{ duration:0.35, ease:[0.22,1,0.36,1] }}
+                  onClick={() => pill && setStep(1)}
+                  style={{
+                    display:"flex", alignItems:"center", gap:18,
+                    padding:"14px 20px 14px 28px",
+                    backgroundColor:"#0f172a",
+                    color:"white", border:"none", borderRadius:16,
+                    fontSize:13, fontWeight:700, letterSpacing:"0.16em",
+                    textTransform:"uppercase", cursor:"pointer", fontFamily:"inherit",
+                    boxShadow:"0 8px 32px rgba(15,23,42,0.22)",
+                    position:"relative",
+                  }}
+                >
+                  <span>Devam Et</span>
+                  <div style={{
+                    width:36, height:36, borderRadius:10,
+                    backgroundColor:"rgba(255,255,255,0.12)",
+                    display:"flex", alignItems:"center", justifyContent:"center",
+                  }}>
+                    <ArrowRight size={16} strokeWidth={2.5} />
+                  </div>
+                </motion.button>
               </div>
             </div>
           </motion.div>
@@ -837,7 +852,7 @@ export default function BasvuruPage() {
                 {submitError && (
                   <div style={{padding:"14px 16px", backgroundColor:"#fef2f2", border:"1px solid #fecaca",
                     borderRadius:12, fontSize:13, color:"#dc2626"}}>
-                    hata: {submitError}
+                    ⚠️ {submitError}
                   </div>
                 )}
                 <NextBtn type="submit" label={sending ? "Gönderiliyor..." : "Başvuruyu Gönder"}
