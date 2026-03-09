@@ -24,7 +24,7 @@ export default function Footer() {
           <nav style={{ display: "flex", gap: 48, flexWrap: "wrap" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <p style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#334155", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 4px" }}>Etkinlik</p>
-              {[{ href: "/hakkinda", label: "Hakkında" }, { href: "/program", label: "Program" }, { href: "/juri", label: "Jüri & Sponsorlar" }].map(l => (
+              {[{ href: "/hakkinda", label: "Hakkında" }, { href: "/program", label: "Program" }, { href: "/juri", label: "Jüri" }, { href: "/sponsorlar", label: "Sponsorlar" }].map(l => (
                 <Link key={l.href} href={l.href} style={{ fontSize: 14, color: "#475569", textDecoration: "none" }}>{l.label}</Link>
               ))}
             </div>
