@@ -44,7 +44,16 @@ function Particles() {
       raf = requestAnimationFrame(draw)
     }
     draw()
-    const onResize = () => { w = canvas.offsetWidth; h = canvas.offsetHeight; canvas.width = w; canvas.height = h }
+    const onResize = () => {
+      const oldW = w, oldH = h
+      w = canvas.offsetWidth; h = canvas.offsetHeight
+      canvas.width = w; canvas.height = h
+      // partikülleri boyutlara oranla
+      pts.forEach(p => {
+        p.x = (p.x / oldW) * w
+        p.y = (p.y / oldH) * h
+      })
+    }
     window.addEventListener("resize", onResize)
     return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", onResize) }
   }, [])
@@ -53,10 +62,8 @@ function Particles() {
 
 // 3D FLOATING CODE BLOCKS — mouse parallax efektleri
 const CODE_TOKENS = [
-  // Sol yarı
   { text: "git commit",   x: "2%",   y: "8%",  z: 40,  rotate: -6,  color: "#1d4ed8", side: "left"  },
   { text: "// hack it",   x: "30%",   y: "82%", z: 35,  rotate: -8,  color: "#d97706", side: "left"  },
-  // Sağ yarı
   { text: "&&",           x: "52%",   y: "65%", z: 30,  rotate: 10,  color: "#059669", side: "left"  },
   { text: "function()",   x: "92%",  y: "52%", z: 80,  rotate: -5,  color: "#7c3aed", side: "right" },
   { text: "{ }",          x: "88%",  y: "24%", z: 70,  rotate: 15,  color: "#7c3aed", side: "right" },
@@ -72,7 +79,6 @@ function FloatingCodeBlocks({ mouseX, mouseY }: { mouseX: number; mouseY: number
         const depth = t.z / 100
         const offsetX = (mouseX - 0.5) * depth * -22
         const offsetY = (mouseY - 0.5) * depth * -14
-        // Sol yarıdaki tokenlar sadece sol dar şeritte
         const isLeft = t.side === "left"
         return (
           <motion.div
@@ -157,7 +163,7 @@ function GlitchText({ text, className, style }: { text: string; className?: stri
   )
 }
 
-// MAGNETIC BUTTON TAM ÇALIŞMIYOR OLABİLİR BU
+// MAGNETIC BUTTON
 function MagneticButton({ children, href, style: extStyle }: { children: React.ReactNode; href: string; style?: React.CSSProperties }) {
   const ref = useRef<HTMLAnchorElement>(null)
   const x = useMotionValue(0)
@@ -190,7 +196,7 @@ function MagneticButton({ children, href, style: extStyle }: { children: React.R
   )
 }
 
-// TERMINAL ANIMATION BU HIZLANABİLİR
+// TERMINAL ANIMATION
 const TERMINAL_LINES = [
   { type: "cmd",  text: "npm run hackathon --team=4" },
   { type: "out",  text: "> Loading challenges..." },
@@ -205,10 +211,19 @@ const TERMINAL_LINES = [
 
 function TerminalBlock() {
   const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: "-80px" })
+  const inView = useInView(ref, { once: false, margin: "-80px" })
   const [visibleLines, setVisibleLines] = useState(0)
   const [currentText, setCurrentText] = useState("")
   const [typing, setTyping] = useState(false)
+
+  // inView değiştiğinde animasyonu sıfırla
+  useEffect(() => {
+    if (inView) {
+      setVisibleLines(0)
+      setCurrentText("")
+      setTyping(false)
+    }
+  }, [inView])
 
   useEffect(() => {
     if (!inView) return
@@ -407,7 +422,7 @@ function TiltCard({ children, style: extStyle }: { children: React.ReactNode; st
   )
 }
 
-// ANIMATED NUMBER KISMI
+// ANIMATED NUMBER
 function AnimNumber({ to, suffix="" }: { to: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null)
   const inView = useInView(ref, { once:true, margin:"-40px" })
@@ -441,10 +456,9 @@ export default function HomePage() {
   return (
     <div style={{ fontFamily:"'DM Sans','Helvetica Neue',sans-serif", backgroundColor:"#f8fafc", color:"#0f172a", overflowX:"hidden" }}>
 
-      {/* 
-          HERO
-       */}
+      {/* HERO */}
       <section
+        data-hero  // mobil medya sorgusu
         onMouseMove={onMouseMove}
         style={{
           minHeight:"calc(100dvh - 64px)",
@@ -495,9 +509,13 @@ export default function HomePage() {
               style={{
                 fontSize:"clamp(54px,6.5vw,90px)", fontWeight:900,
                 letterSpacing:"-0.04em", lineHeight:1.0, margin:0,
-                color:"transparent", WebkitTextStroke:"2.5px #1d4ed8",
+                color:"transparent",
+                WebkitTextStroke:"2.5px #1d4ed8",
+                fontFamily: "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
               }}
-            >48 saatte</motion.h1>
+            >
+              48 saatte
+            </motion.h1>
           </div>
           <div style={{ overflow:"hidden", marginBottom:40 }}>
             <motion.h1
@@ -553,7 +571,9 @@ export default function HomePage() {
             </motion.a>
           </motion.div>
 
+          {/* Konum yazısı */}
           <motion.div
+            className="location-text"
             initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.9 }}
             style={{ position:"absolute", bottom:36, left:64, display:"flex", alignItems:"center", gap:6 }}
           >
@@ -572,7 +592,8 @@ export default function HomePage() {
           padding:"80px 48px",
           backgroundColor:"rgba(255,255,255,0.45)",
         }}>
-          <div style={{
+          {/* Arkaplan 48H - mobilde gizlenecek */}
+          <div className="desktop-only-48h" style={{
             position:"absolute", top:"50%", left:"50%",
             transform:"translate(-50%,-50%)",
             fontSize:"clamp(110px,16vw,210px)",
@@ -644,17 +665,9 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Mobile override */}
-        <style>{`
-          @media(max-width:768px){
-            section[data-hero]{ grid-template-columns:1fr !important; }
-          }
-        `}</style>
       </section>
 
-      {/* 
-          FEATURES — Tilt Cards
-       */}
+      {/* FEATURES — Tilt Cards */}
       <section style={{
         backgroundColor:"#ffffff",
         borderTop:"1px solid #e2e8f0",
@@ -721,9 +734,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 
-          TERMINAL + STATS
-       */}
+      {/* TERMINAL + STATS */}
       <section style={{ padding:"100px 32px", maxWidth:1120, margin:"0 auto" }}>
         <div style={{
           display:"grid", gridTemplateColumns:"1fr 1fr",
@@ -801,9 +812,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════
-          CTA
-      ══════════════════════════════════════════════ */}
+      {/* CTA */}
       <section style={{ padding:"0 32px 100px", maxWidth:1120, margin:"0 auto" }}>
         <motion.div
           initial={{ opacity:0, y:24 }}
@@ -858,11 +867,24 @@ export default function HomePage() {
         </motion.div>
       </section>
 
+      {/* Global Stiller */}
       <style>{`
         * { box-sizing:border-box; }
         ::selection { background:#bfdbfe; color:#1e3a8a; }
-        @media(max-width:768px){
-          section { grid-template-columns:1fr !important; }
+
+        @media (max-width:768px) {
+          section[data-hero] {
+            grid-template-columns:1fr !important;
+          }
+          /* konum yazısı mobilde sola yaslan */
+          .location-text {
+            left: 16px !important;
+            bottom: 16px !important;
+          }
+          /* arkaplandaki 48H yazısını gizle */
+          .desktop-only-48h {
+            display: none !important;
+          }
         }
       `}</style>
     </div>
