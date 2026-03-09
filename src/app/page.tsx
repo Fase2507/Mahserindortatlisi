@@ -1,8 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
+import { motion, AnimatePresence, useInView } from "framer-motion"
+import { ArrowRight, Calendar, MapPin, Users, Zap } from "lucide-react"
 
+// ─── HOOKS ─────────────────────────────────────────────────────────────────
 function useCountdown(target: Date) {
   const calc = () => {
     const diff = target.getTime() - Date.now()
@@ -15,267 +18,197 @@ function useCountdown(target: Date) {
     }
   }
   const [t, setT] = useState(calc)
-  useEffect(() => { const id = setInterval(() => setT(calc()), 1000); return () => clearInterval(id) }, [])
+  useEffect(() => {
+    const id = setInterval(() => setT(calc()), 1000)
+    return () => clearInterval(id)
+  }, [target])
   return t
 }
 
-function Marquee({ items, reverse = false }: { items: string[]; reverse?: boolean }) {
-  const text = (items.join("  —  ") + "  —  ").toUpperCase()
-  const repeated = text.repeat(6)
+// ─── COMPONENTS ────────────────────────────────────────────────────────────
+function FlipNumber({ val, label }: { val: number; label: string }) {
+  const formatted = String(val).padStart(2, "0")
   return (
-    <div style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
-      <style>{`
-        @keyframes mq { from { transform: translateX(0) } to { transform: translateX(-50%) } }
-        @keyframes mq-r { from { transform: translateX(-50%) } to { transform: translateX(0) } }
-        @keyframes shine { to { background-position: 200% center } }
-      `}</style>
-      <span style={{
-        display: "inline-block",
-        animation: `${reverse ? "mq-r" : "mq"} 40s linear infinite`,
-        fontFamily: "'DM Mono', monospace",
-        fontSize: 12,
-        letterSpacing: "0.08em",
-        color: reverse ? "#94a3b8" : "#fff",
-        fontWeight: 500,
-      }}>{repeated}</span>
+    <div className="flex flex-col items-center">
+      <div className="relative overflow-hidden bg-white border border-slate-200 shadow-sm rounded-2xl w-16 h-20 md:w-20 md:h-24 flex items-center justify-center">
+        <AnimatePresence mode="popLayout">
+          <motion.span
+            key={formatted}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="font-mono text-3xl md:text-4xl font-extrabold text-slate-800 tracking-tighter"
+          >
+            {formatted}
+          </motion.span>
+        </AnimatePresence>
+      </div>
+      <span className="font-mono text-[10px] md:text-xs font-bold text-slate-400 mt-3 tracking-widest uppercase">
+        {label}
+      </span>
     </div>
   )
 }
 
-const themes = [
-  { id: "01", title: "Endüstri & Vaka Analizi", desc: "Gerçek iş problemlerine yazılım tabanlı çözümler", accent: "#2563eb" },
-  { id: "02", title: "Sağlıkta Yapay Zeka", desc: "Etik kurallara uygun sağlık odaklı AI çözümleri", accent: "#0ea5e9" },
-  { id: "03", title: "Veri Bilimi", desc: "Analiz, modelleme, tahminleme ve içgörü üretimi", accent: "#6366f1" },
-  { id: "04", title: "Siber Güvenlik – CTF", desc: "Zafiyet analizi, exploit ve teknik raporlama", accent: "#ec4899" },
-  { id: "05", title: "Web Tasarım & UX", desc: "İşlevsel ve estetik kullanıcı deneyimi tasarımı", accent: "#10b981" },
-]
-
-export default function HomePage() {
-  const cd = useCountdown(new Date("2026-04-25T09:00:00"))
-  const [hovered, setHovered] = useState<number | null>(null)
+function AnimatedStat({ value, label }: { value: string; label: string }) {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: "-50px" })
 
   return (
-    <div style={{ background: "#fff", fontFamily: "'Inter', sans-serif" }}>
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+      transition={{ duration: 0.6, type: "spring" }}
+      className="flex flex-col items-center justify-center gap-2 p-6"
+    >
+      <span className="font-mono text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tighter">
+        {value}
+      </span>
+      <span className="text-sm font-semibold text-slate-500 uppercase tracking-wide">{label}</span>
+    </motion.div>
+  )
+}
 
-      {/* TOP BAND */}
-      <div style={{ background: "#1d4ed8", padding: "10px 0" }}>
-        <Marquee items={["48 Saatlik Hackathon", "25–26 Nisan 2026", "Düzce Üniversitesi Teknopark", "ÜNİDES Destekli", "5 Kategori", "Ücretsiz Katılım", "Mentor Desteği"]} />
-      </div>
+// ─── PAGE ──────────────────────────────────────────────────────────────────
+export default function HomePage() {
+  const targetDate = new Date("2026-04-25T09:00:00")
+  const cd = useCountdown(targetDate)
 
-      {/* HERO */}
-      <section style={{ background: "#fff", paddingTop: 100, paddingBottom: 100, paddingLeft: 24, paddingRight: 24, position: "relative", overflow: "hidden" }}>
-        {/* Subtle dot grid */}
-        <div style={{
-          position: "absolute", inset: 0, pointerEvents: "none",
-          backgroundImage: "radial-gradient(#e2e8f0 1px, transparent 1px)",
-          backgroundSize: "28px 28px",
-          opacity: 0.7,
-        }} />
-        {/* Blue glow top right */}
-        <div style={{ position: "absolute", top: -100, right: -100, width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%)", pointerEvents: "none" }} />
+  return (
+    <div className="min-h-screen bg-slate-50 font-sans selection:bg-blue-200 selection:text-blue-900 flex flex-col overflow-x-hidden">
+      
+      {/* HERO SECTION (CENTER ALIGNED) */}
+      <section className="relative pt-24 pb-20 md:pt-32 md:pb-32 px-6 flex flex-col items-center justify-center text-center overflow-hidden">
+        
+        {/* AMBIENT BACKGROUND */}
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:40px_40px] opacity-40 [mask-image:radial-gradient(ellipse_60%_60%_at_50%_40%,black_40%,transparent_100%)]" />
+          <div className="absolute top-[20%] w-[600px] h-[600px] bg-blue-400/15 rounded-full blur-[120px]" />
+        </div>
 
-        <div style={{ position: "relative", maxWidth: 1200, margin: "0 auto" }}>
+        <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center">
+          
           {/* Eyebrow */}
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 100, padding: "6px 16px", marginBottom: 32 }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#2563eb", animation: "pulse 2s infinite" }} />
-            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 12, color: "#1d4ed8", letterSpacing: "0.05em" }}>
-              ÜNİDES Destekli · 25–26 Nisan 2026
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center gap-3 bg-white border border-slate-200 rounded-full px-5 py-2 mb-8 shadow-sm"
+          >
+            <span className="relative flex size-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full size-2.5 bg-blue-500"></span>
             </span>
-            <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
-          </div>
+            <span className="font-mono text-xs font-bold text-slate-600 tracking-widest uppercase">
+              Ulusal Hackathon 2026
+            </span>
+          </motion.div>
 
-          {/* Heading */}
-          <h1 style={{
-            fontFamily: "'Cal Sans', 'Inter', sans-serif",
-            fontWeight: 800,
-            fontSize: "clamp(3rem, 8vw, 6.5rem)",
-            lineHeight: 1.0,
-            letterSpacing: "-0.03em",
-            color: "#0f172a",
-            margin: "0 0 24px",
-            maxWidth: 900,
-          }}>
-            Geleceği{" "}
-            <span style={{
-              background: "linear-gradient(135deg, #1d4ed8 0%, #2563eb 40%, #60a5fa 100%)",
-              backgroundSize: "200% auto",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              animation: "shine 4s linear infinite",
-            }}>
+          {/* Headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-5xl md:text-7xl lg:text-8xl font-black text-slate-900 tracking-tight leading-[1.05] mb-8"
+          >
+            Geleceği <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500">
               48 Saatte
-            </span>
-            {" "}Kodla.
-          </h1>
+            </span> Kodla.
+          </motion.h1>
 
-          <p style={{ fontSize: 18, color: "#64748b", maxWidth: 520, lineHeight: 1.75, margin: "0 0 40px" }}>
-            Düzce Üniversitesi Teknopark'ta 5 kategoride gerçek problemlere çözüm üret.
-            Mentor desteği al, ağını genişlet, ödüller kazan.
-          </p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed mb-12"
+          >
+            Sürdürülebilir enerji alanında gerçek problemlere teknolojik çözümler üret. Takımını kur, kodla ve büyük ödülleri kazan.
+          </motion.p>
 
-          {/* CTAs */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 80 }}>
-            <Link href="/basvuru" style={{
-              padding: "15px 36px", borderRadius: 10, fontWeight: 700, fontSize: 15,
-              background: "#1d4ed8", color: "#fff", textDecoration: "none",
-              boxShadow: "0 4px 24px rgba(29,78,216,0.3)",
-            }}>
-              Hemen Başvur →
+          {/* Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
+          >
+            <Link
+              href="/basvuru"
+              className="w-full sm:w-auto flex items-center justify-center gap-3 px-10 py-4 bg-slate-900 text-white rounded-2xl font-bold text-sm tracking-wide shadow-xl hover:bg-slate-800 transition-all hover:scale-105 active:scale-95"
+            >
+              Hemen Başvur
+              <ArrowRight className="size-4" />
             </Link>
-            <Link href="/hakkinda" style={{
-              padding: "15px 36px", borderRadius: 10, fontWeight: 700, fontSize: 15,
-              background: "#fff", color: "#0f172a", textDecoration: "none",
-              border: "1.5px solid #e2e8f0",
-            }}>
-              Detayları Gör
+            <Link
+              href="/hakkinda"
+              className="w-full sm:w-auto flex items-center justify-center px-10 py-4 bg-white text-slate-700 rounded-2xl font-bold text-sm tracking-wide border border-slate-200 shadow-sm hover:bg-slate-50 transition-all hover:scale-105 active:scale-95"
+            >
+              Detayları İncele
             </Link>
-          </div>
-
-          {/* Stats row */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 0, borderTop: "1px solid #f1f5f9", paddingTop: 40 }}>
-            {[
-              { n: "48", label: "Saat Kesintisiz" },
-              { n: "5", label: "Kategori" },
-              { n: "2–4", label: "Kişi / Takım" },
-              { n: "%100", label: "Ücretsiz" },
-              { n: "4", label: "Düzenleyici Topluluk" },
-            ].map((s, i) => (
-              <div key={i} style={{ paddingRight: 48, marginRight: 0 }}>
-                <p style={{ fontFamily: "'DM Mono', monospace", fontSize: 26, fontWeight: 700, color: "#1d4ed8", lineHeight: 1, margin: 0 }}>{s.n}</p>
-                <p style={{ fontSize: 13, color: "#94a3b8", marginTop: 4 }}>{s.label}</p>
-              </div>
-            ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
 
-      {/* MARQUEE 2 — muted */}
-      <div style={{ borderTop: "1px solid #f1f5f9", borderBottom: "1px solid #f1f5f9", padding: "13px 0", background: "#f8fafc" }}>
-        <Marquee items={["Endüstri & Vaka Analizi", "Sağlıkta Yapay Zeka", "Veri Bilimi", "Siber Güvenlik CTF", "Web Tasarım & UX"]} reverse />
-      </div>
-
-      {/* COUNTDOWN */}
-      <section style={{ background: "#0f172a", padding: "80px 24px" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", textAlign: "center" }}>
-          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#60a5fa", letterSpacing: "0.15em", marginBottom: 8 }}>ETKİNLİĞE KALAN SÜRE</p>
-          <p style={{ fontSize: 13, color: "#334155", marginBottom: 40 }}>25 Nisan 2026, 09:00</p>
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-            {[
-              { v: cd.days, l: "GÜN" },
-              { v: cd.hours, l: "SAAT" },
-              { v: cd.minutes, l: "DAKİKA" },
-              { v: cd.seconds, l: "SANİYE" },
-            ].map((item, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: "clamp(2rem, 5vw, 3.5rem)",
-                    fontWeight: 700,
-                    color: "#f8fafc",
-                    background: "#1e293b",
-                    border: "1px solid #334155",
-                    borderRadius: 12,
-                    padding: "14px 20px",
-                    lineHeight: 1,
-                    minWidth: 88,
-                  }}>
-                    {String(item.v).padStart(2, "0")}
-                  </div>
-                  <p style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: "#475569", marginTop: 8, letterSpacing: "0.12em" }}>{item.l}</p>
-                </div>
-                {i < 3 && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 28, color: "#334155", marginBottom: 24 }}>:</span>}
+        {/* HORIZONTAL WIDGET (COUNTDOWN) */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, type: "spring", bounce: 0.4 }}
+          className="relative z-10 mt-20 md:mt-24 w-full max-w-3xl mx-auto"
+        >
+          <div className="bg-white/60 backdrop-blur-2xl border border-slate-200/80 p-6 md:p-8 rounded-[2rem] shadow-2xl shadow-slate-200/50 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-4">
+            <div className="flex flex-col items-center md:items-start text-center md:text-left">
+              <div className="flex items-center gap-2 text-blue-600 mb-2">
+                <Zap className="size-5" />
+                <span className="font-mono text-sm font-bold tracking-widest uppercase">Canlı</span>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* KATEGORİLER */}
-      <section style={{ padding: "100px 24px", background: "#fff" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 56, flexWrap: "wrap", gap: 16 }}>
-            <div>
-              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#2563eb", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 12 }}>Kategoriler</p>
-              <h2 style={{ fontFamily: "'Inter', sans-serif", fontWeight: 800, fontSize: "clamp(1.8rem, 4vw, 3rem)", color: "#0f172a", lineHeight: 1.15, letterSpacing: "-0.02em", margin: 0 }}>
-                Hangi alanda<br />üreteceksin?
-              </h2>
+              <span className="text-slate-500 font-medium">Etkinliğe kalan süre</span>
             </div>
-            <Link href="/hakkinda" style={{ fontSize: 14, color: "#2563eb", textDecoration: "none", fontWeight: 600 }}>Tüm detaylar →</Link>
-          </div>
 
-          <div>
-            {themes.map((t, i) => (
-              <div
-                key={i}
-                onMouseEnter={() => setHovered(i)}
-                onMouseLeave={() => setHovered(null)}
-                style={{
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
-                  padding: "24px 0",
-                  borderTop: "1px solid #f1f5f9",
-                  transition: "all 0.15s",
-                  cursor: "default",
-                  paddingLeft: hovered === i ? 16 : 0,
-                  borderLeft: hovered === i ? `3px solid ${t.accent}` : "3px solid transparent",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#cbd5e1", minWidth: 24 }}>{t.id}</span>
-                  <span style={{ fontWeight: 700, fontSize: "clamp(1rem, 2vw, 1.2rem)", color: hovered === i ? "#0f172a" : "#475569", transition: "color 0.15s" }}>
-                    {t.title}
-                  </span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-                  {hovered === i && (
-                    <span style={{ fontSize: 13, color: "#64748b", maxWidth: 300, textAlign: "right" }}>{t.desc}</span>
-                  )}
-                  <span style={{ fontSize: 18, color: hovered === i ? t.accent : "#e2e8f0", transition: "color 0.15s", fontWeight: 700 }}>→</span>
-                </div>
-              </div>
-            ))}
-            <div style={{ borderTop: "1px solid #f1f5f9" }} />
-          </div>
-        </div>
-      </section>
-
-      {/* BİLGİ BANDI */}
-      <section style={{ background: "#f8fafc", borderTop: "1px solid #f1f5f9", borderBottom: "1px solid #f1f5f9", padding: "56px 24px" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 40 }}>
-          {[
-            { label: "Format", value: "48 Saat Kesintisiz" },
-            { label: "Tarih", value: "25–26 Nisan 2026" },
-            { label: "Yer", value: "Düzce Üni. Teknopark" },
-            { label: "Takım", value: "2–4 Kişi" },
-            { label: "Katılım", value: "Ücretsiz" },
-          ].map((item, i) => (
-            <div key={i}>
-              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#94a3b8", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>{item.label}</p>
-              <p style={{ fontWeight: 600, fontSize: 15, color: "#0f172a" }}>{item.value}</p>
+            <div className="flex items-center gap-2 md:gap-4">
+              <FlipNumber val={cd.days} label="Gün" />
+              <span className="font-mono text-3xl text-slate-300 pb-6">:</span>
+              <FlipNumber val={cd.hours} label="Saat" />
+              <span className="font-mono text-3xl text-slate-300 pb-6">:</span>
+              <FlipNumber val={cd.minutes} label="Dk" />
+              <span className="font-mono text-3xl text-slate-300 pb-6">:</span>
+              <FlipNumber val={cd.seconds} label="Sn" />
             </div>
-          ))}
+          </div>
+        </motion.div>
+      </section>
+
+      {/* STATS GRID */}
+      <section className="bg-white border-y border-slate-200 py-16 px-6">
+        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-slate-100">
+          <AnimatedStat value="48h" label="Kesintisiz Maraton" />
+          <AnimatedStat value="113K₺" label="Proje Bütçesi" />
+          <AnimatedStat value="2-4" label="Kişilik Ekipler" />
+          <AnimatedStat value="%100" label="Ücretsiz" />
         </div>
       </section>
 
-      {/* CTA */}
-      <section style={{ padding: "120px 24px", background: "#fff", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", bottom: -200, right: -200, width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(37,99,235,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
-        <div style={{ position: "relative", maxWidth: 1200, margin: "0 auto", textAlign: "center" }}>
-          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#2563eb", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 20 }}>Hazır mısın?</p>
-          <h2 style={{ fontFamily: "'Inter', sans-serif", fontWeight: 800, fontSize: "clamp(2.2rem, 5vw, 4.5rem)", color: "#0f172a", lineHeight: 1.05, letterSpacing: "-0.03em", margin: "0 0 20px" }}>
-            Takımını kur,<br />yerinizi ayırtın.
-          </h2>
-          <p style={{ fontSize: 16, color: "#64748b", margin: "0 auto 44px", maxWidth: 400, lineHeight: 1.7 }}>
-            Başvuru tamamen ücretsiz. 2–4 kişilik takımlar katılabilir.
-          </p>
-          <Link href="/basvuru" style={{
-            display: "inline-block", padding: "18px 56px", borderRadius: 12,
-            fontWeight: 800, fontSize: 16,
-            background: "#1d4ed8", color: "#fff", textDecoration: "none",
-            boxShadow: "0 8px 32px rgba(29,78,216,0.25)",
-          }}>
-            Başvuruyu Tamamla →
-          </Link>
+      {/* BENTO INFO */}
+      <section className="py-24 px-6 bg-slate-50">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Sıradan bir yarışma değil.</h2>
+            <p className="mt-4 text-slate-500 font-medium">Ürün geliştirme simülasyonuna hoş geldin.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="col-span-1 md:col-span-2 bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-md transition-all">
+              <Calendar className="size-8 text-blue-500 mb-6" />
+              <h3 className="text-xl font-bold text-slate-900 mb-3">25-26 Nisan 2026</h3>
+              <p className="text-slate-500 leading-relaxed font-medium">Etkinlik tam 48 saat sürecek. Gece kodlama seansları, mentor destekleri ve kod dondurma aşamalarıyla gerçek bir maraton.</p>
+            </div>
+            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-md transition-all">
+              <MapPin className="size-8 text-indigo-500 mb-6" />
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Lokasyon</h3>
+              <p className="text-slate-500 leading-relaxed font-medium">Düzce Üni. Teknopark. Kesintisiz internet ve dinlenme alanları.</p>
+            </div>
+          </div>
         </div>
       </section>
 
