@@ -14,27 +14,43 @@ const supabase = createClient(
 type PillColor = "red" | "blue"
 type Dir = "bottom" | "top" | "left" | "right"
 interface Member { name: string; uni: string; dept: string; grade: string }
-// ─── FINAL HAND SYNERGY (Anatomically Correct) ─────────────────────────────────────────────────────────────
+// ─── HAND SYNERGY (Revised for Realistic Anatomy) ─────────────────────────────────────────────────────────────
 // function HandSynergy({ count }: { count: number }) {
+//   // We've updated the color palette to be more soft and corporate (Flat 2.0 style)
 //   const hands = [
-//     { name: "hand1", color: "#50E3C2", delay: 0, start: { x: 0, y: 0 }, end: { x: 0, y: 12 }, rotate: -45 },
-//     { name: "hand2", color: "#F5A623", delay: 0.06, start: { x: 60, y: -60 }, end: { x: -20, y: 20 }, rotate: 45 },
-//     { name: "hand3", color: "#FF5F5F", delay: 0.12, start: { x: 0, y: 0 }, end: { x: 0, y: -2 }, rotate: 135 },
-//     { name: "hand4", color: "#4A90E2", delay: 0.18, start: { x: 0, y: 0 }, end: { x: 32, y: 0 }, rotate: 225 },
+//     { name: "hand1", color: "#50E3C2", delay: 0, start: { x: 0, y: 0 }, end: { x: -65, y: 42 }, rotate: -45 },
+//     { name: "hand2", color: "#F5A623", delay: 0.06, start: { x: 60, y: -60 }, end: { x: -40, y: -60 }, rotate: 45 },
+//     { name: "hand3", color: "#FF5F5F", delay: 0.12, start: { x: 0, y: 0 }, end: { x: 50, y: -32 }, rotate: 135 },
+//     { name: "hand4", color: "#4A90E2", delay: 0.18, start: { x: 0, y: 0 }, end: { x: 52, y: 50 }, rotate: 225 },
 //   ]
 
+//   const entry = ({ x, y }: { x: number; y: number }) => ({
+//     x,
+//     y,
+//     opacity: 0,
+//   })
+//   const arrive = ({ x, y }: { x: number; y: number }) => ({
+//     x,
+//     y,
+//     opacity: 1,
+//   })
+
 //   function SolidHandSilhouette({ color }: { color: string }) {
-//     // Profesyonel el anatomisi: Bilekten parmak uçlarına daralan ve 
-//     // parmak boğumları belirgin olan temiz bir SVG yolu.
+//     // ANATOMICALLY ACCURATE HAND based on proper proportions:
+//     // - Finger hierarchy: Middle > Ring > Index > Pinky ≈ Thumb
+//     // - Fingers = palm length
+//     // - Thumb positioned on side with unique angle
+//     // - Skewed arc at fingertips (not straight)
 //     return (
-//       <path
-//         d="M25,100 C25,105 30,110 35,110 L65,110 C70,110 75,105 75,100 C75,90 70,80 65,75 L65,25 C65,18 58,18 58,25 L58,70 L52,15 C52,8 45,8 45,15 L45,70 L38,20 C38,13 31,13 31,20 L31,70 L25,30 C25,23 18,23 18,30 L18,80 C18,90 20,95 25,100 Z M65,75 L85,65 C92,62 95,68 90,75 L70,95"
-//         fill={color}
-//         stroke="none"
-//         strokeLinejoin="round"
-//         strokeLinecap="round"
-//         transform="translate(-50, -60) scale(1.2)" 
-//       />
+//       <svg viewBox="0 0 100 140" width="50%" height="60%">
+//         <path
+//           d="M 12 85 Q 8 75 10 60 Q 12 45 18 38 Q 21 35 25 37 Q 27 38 26 48 Q 23 68 20 88 Q 18 98 12 98 L 12 100 Q 14 112 30 118 Q 48 124 52 124 Q 65 124 82 118 Q 95 112 97 100 L 95 100 Q 97 83 95 62 Q 93 42 88 28 Q 86 20 80 18 Q 76 17 76 26 Q 78 50 80 75 Q 82 98 78 100 L 73 100 Q 73 78 71 52 Q 69 26 64 12 Q 62 4 56 3 Q 52 2 52 12 Q 54 40 56 70 Q 58 96 60 100 L 54 100 Q 54 72 52 40 Q 50 12 46 4 Q 44 0 38 2 Q 34 3 35 14 Q 37 48 40 80 Q 42 98 44 100 L 38 100 Q 38 80 36 56 Q 34 32 30 20 Q 28 12 22 11 Q 18 10 19 20 Q 22 40 24 70 Q 26 96 27 100 L 22 100 Q 16 102 12 98 Z"
+//           fill={color}
+//           stroke="none"
+//           strokeLinejoin="round"
+//           strokeLinecap="round"
+//         />
+//       </svg>
 //     );
 //   }
 
@@ -43,7 +59,7 @@ interface Member { name: string; uni: string; dept: string; grade: string }
 //       <svg viewBox="0 0 200 200" width="160" height="160" xmlns="http://www.w3.org/2000/svg">
 //         <defs>
 //           <filter id="hand-shadow" x="-50%" y="-50%" width="200%" height="200%">
-//             <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="rgba(0,0,0,0.15)" />
+//             <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="rgba(0,0,0,0.12)" />
 //           </filter>
 //           <mask id="center-mask">
 //             <rect x="0" y="0" width="200" height="200" fill="white" />
@@ -51,27 +67,39 @@ interface Member { name: string; uni: string; dept: string; grade: string }
 //           </mask>
 //         </defs>
 
-//         {hands.slice(0, count).map((h) => (
+//         {hands.slice(0, count).map((h, i) => (
 //           <motion.g
 //             key={h.name}
-//             initial={{ opacity: 0, x: h.start.x, y: h.start.y }}
-//             animate={{ opacity: 1, x: h.end.x, y: h.end.y }}
+//             initial={entry(h.start)}
+//             animate={arrive(h.end)}
+//             exit={entry(h.start)}
 //             transition={{ type: "spring", stiffness: 280, damping: 26, delay: h.delay }}
 //             style={{ transformOrigin: "100px 100px" }}
 //             filter="url(#hand-shadow)"
 //           >
-//             <g transform={`rotate(${h.rotate}, 100, 100) translate(100, 100)`}>
+//             {/* The actual rotation and positioning logic can be complex in SVG,
+//                so we rotate around the center and translate the hand into place */}
+//             <g transform={`rotate(${h.rotate}, 100, 100) translate(100, 100) scale(1.08)`}>
 //               <SolidHandSilhouette color={h.color} />
 //             </g>
 //           </motion.g>
 //         ))}
 
-//         <circle cx="100" cy="100" r="28" fill="transparent" filter="url(#hand-shadow)" />
+//         {/* Under-shadow for depth */}
+//         <circle cx="100" cy="100" r="30" fill="rgba(0,0,0,0.04)" />
+        
+//         {/* Center badge (masked by hand silhouettes) */}
+//         <g mask="url(#center-mask)">
+//           <circle cx="100" cy="100" r="28" fill="rgba(255,255,255,0.98)" stroke="rgba(0,0,0,0.08)" strokeWidth="2" filter="url(#hand-shadow)" />
+//         </g>
+        
+//         {/* Center number */}
 //         <text
-//           x="100" y="108"
+//           x="100"
+//           y="108"
 //           textAnchor="middle"
 //           dominantBaseline="middle"
-//           style={{ fontSize: 32, fontWeight: 900, fill: "#0f172a" }}
+//           style={{ fontSize: 32, fontWeight: 900, fill: "#0f172a", letterSpacing: "0.08em" }}
 //         >
 //           {count}
 //         </text>
@@ -80,100 +108,211 @@ interface Member { name: string; uni: string; dept: string; grade: string }
 //   )
 // }
 
-
+// ─── HAND SYNERGY (Revised for Realistic Anatomy) ─────────────────────────────────────────────────────────────
 function HandSynergy({ count }: { count: number }) {
+  // We've updated the color palette to be more soft and corporate (Flat 2.0 style)
   const hands = [
-    { id: "h1", color: "#50E3C2", dark: "#3CBDA2", delay: 0, rotate: -45, end: { x: 30, y: 32 } },
-    { id: "h2", color: "#F5A623", dark: "#D68A1B", delay: 0.06, rotate: 45, end: { x: -30, y: 30 } },
-    { id: "h3", color: "#FF5F5F", dark: "#E04D4D", delay: 0.12, rotate: 135, end: { x: -30, y: -2 } },
-    { id: "h4", color: "#4A90E2", dark: "#357ABD", delay: 0.18, rotate: 225, end: { x: 42, y: -10 } },
-  ];
+    { name: "hand1", color: "#50E3C2", delay: 0, start: { x: 0, y: 0 }, end: { x: -65, y: 42 }, rotate: -45 },
+    { name: "hand2", color: "#F5A623", delay: 0.06, start: { x: 60, y: -60 }, end: { x: -40, y: -60 }, rotate: 45 },
+    { name: "hand3", color: "#FF5F5F", delay: 0.12, start: { x: 0, y: 0 }, end: { x: 50, y: -32 }, rotate: 135 },
+    { name: "hand4", color: "#4A90E2", delay: 0.18, start: { x: 0, y: 0 }, end: { x: 52, y: 50 }, rotate: 225 },
+  ]
 
-  function AnatomicalHand({ color, dark, id }: { color: string, dark: string, id: string }) {
+  const entry = ({ x, y }: { x: number; y: number }) => ({
+    x,
+    y,
+    opacity: 0,
+  })
+  const arrive = ({ x, y }: { x: number; y: number }) => ({
+    x,
+    y,
+    opacity: 1,
+  })
+
+  function SolidHandSilhouette({ color }: { color: string }) {
+    // ANATOMICALLY ACCURATE HAND based on proper proportions:
+    // - Finger hierarchy: Middle > Ring > Index > Pinky ≈ Thumb
+    // - Fingers = palm length
+    // - Thumb positioned on side with unique angle
+    // - Skewed arc at fingertips (not straight)
     return (
-      <g transform="translate(-50, -65) scale(1.1)">
-        <defs>
-          <linearGradient id={`grad-${id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor={color} />
-            <stop offset="100%" stopColor={dark} />
-          </linearGradient>
-        </defs>
-
-        {/* Yeni Anatomik El Silüeti: Dar Bilek, Geniş Avuç ve Kademeli Parmaklar */}
-        <path
-          d="M40,125 L60,125 
-             C62,110 75,100 75,85 
-             L88,78 C95,74 98,82 92,88 
-             L75,105 
-             C75,95 72,80 72,75 L72,25 C72,18 63,18 63,25 L63,70 
-             L56,15 C56,8 47,8 47,15 L47,70 
-             L39,20 C39,13 30,13 30,20 L30,70 
-             L22,35 C22,28 14,28 14,35 L14,80 
-             C14,95 25,110 40,125 Z"
-          fill={`url(#grad-${id})`}
-        />
-
-        {/* Eklem ve Avuç İçi Detayları (Hafif Gölgeler) */}
-        <g stroke={dark} strokeWidth="0.8" opacity="0.3" fill="none" strokeLinecap="round">
-          {/* Parmak boğum çizgileri */}
-          <path d="M30,50 L39,50" />
-          <path d="M47,45 L56,45" />
-          <path d="M63,55 L72,55" />
-          {/* Avuç içi "Hayat Çizgisi" dokunuşu */}
-          <path d="M40,105 C45,95 60,90 70,100" />
-        </g>
-
-        {/* Üstten Gelen Işık Vurgusu (Highlights) */}
-        <path
-          d="M18,60 C18,45 22,35 22,35"
-          stroke="white"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          opacity="0.2"
-        />
-      </g>
+      <svg viewBox="0 0 100 140" width="50%" height="60%">
+       <path
+      d="M 40 95 L 40 30 C 40 22 38 12 38 12 C 38 8 41 6 45 6 C 49 6 51 10 51 12 L 51 70 L 60 8 C 60 4 63 2 67 2 C 71 2 74 5 74 10 L 74 75 L 85 12 C 85 6 88 3 92 3 C 96 3 99 7 99 12 L 99 80 C 99 88 93 95 85 95 L 45 95 C 42 95 40 95 40 95 Z"
+      fill={color}
+      stroke="none"
+      strokeLinejoin="round"
+      strokeLinecap="round"
+    />
+      </svg>
     );
   }
 
   return (
-    <div className="relative w-48 h-48 flex items-center justify-center">
-      <svg viewBox="0 0 200 200" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+    <div className="relative w-40 h-40 flex items-center justify-center shrink-0" aria-hidden>
+      <svg viewBox="0 0 200 200" width="160" height="160" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <filter id="soft-shadow" x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="0" dy="5" stdDeviation="6" floodColor="black" floodOpacity="0.15" />
+          <filter id="hand-shadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="rgba(0,0,0,0.12)" />
           </filter>
+          <mask id="center-mask">
+            <rect x="0" y="0" width="200" height="200" fill="white" />
+            <circle cx="100" cy="100" r="26" fill="black" />
+          </mask>
         </defs>
 
-        {hands.slice(0, count).map((h) => (
+        {hands.slice(0, count).map((h, i) => (
           <motion.g
-            key={h.id}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1, x: h.end.x, y: h.end.y }}
-            transition={{ type: "spring", stiffness: 100, damping: 15, delay: h.delay }}
+            key={h.name}
+            initial={entry(h.start)}
+            animate={arrive(h.end)}
+            exit={entry(h.start)}
+            transition={{ type: "spring", stiffness: 280, damping: 26, delay: h.delay }}
             style={{ transformOrigin: "100px 100px" }}
-            filter="url(#soft-shadow)"
+            filter="url(#hand-shadow)"
           >
-            <g transform={`rotate(${h.rotate}, 100, 100) translate(100, 100)`}>
-              <AnatomicalHand color={h.color} dark={h.dark} id={h.id} />
+            {/* The actual rotation and positioning logic can be complex in SVG,
+               so we rotate around the center and translate the hand into place */}
+            <g transform={`rotate(${h.rotate}, 100, 100) translate(100, 100) scale(1.08)`}>
+              <SolidHandSilhouette color={h.color} />
             </g>
           </motion.g>
         ))}
 
-        {/* Merkez Sayı - Transparan Alan */}
-        <circle cx="100" cy="100" r="28" fill="white" fillOpacity="0.05" />
+        {/* Under-shadow for depth */}
+        <circle cx="100" cy="100" r="30" fill="rgba(0,0,0,0.04)" />
+        
+        {/* Center badge (masked by hand silhouettes) */}
+        <g mask="url(#center-mask)">
+          <circle cx="100" cy="100" r="28" fill="rgba(255,255,255,0.98)" stroke="rgba(0,0,0,0.08)" strokeWidth="2" filter="url(#hand-shadow)" />
+        </g>
+        
+        {/* Center number */}
         <text
-          x="100" y="108"
+          x="100"
+          y="108"
           textAnchor="middle"
           dominantBaseline="middle"
-          style={{ fontSize: 34, fontWeight: 900, fill: "#1e293b", fontFamily: "sans-serif" }}
+          style={{ fontSize: 32, fontWeight: 900, fill: "#0f172a", letterSpacing: "0.08em" }}
         >
           {count}
         </text>
       </svg>
     </div>
-  );
+  )
 }
 
+// // ─── HAND SYNERGY ─────────────────────────────────────────────────────────────
+// function HandSynergy({ count }: { count: number }) {
+//   const hands = [
+//     { name: "hand1", color: "#E74C3C", delay: 0, start: { x: 0, y: 0 }, end: { x: -65, y: 42 }, rotate: -45 },
+//     { name: "hand2", color: "#3498DB", delay: 0.06, start: { x: 60, y: -60 }, end: { x: -40, y: -60 }, rotate: 45 },
+//     { name: "hand3", color: "#2ECC71", delay: 0.12, start: { x: 0, y: 0 }, end: { x: 50, y: -32 }, rotate: 135 },
+//     { name: "hand4", color: "#F1C40F", delay: 0.18, start: { x: 0, y: 0 }, end: { x: 52, y: 50 }, rotate: 225 },
+//   ]
+
+//   const entry = ({ x, y }: { x: number; y: number }) => ({
+//     x,
+//     y,
+//     opacity: 0,
+//   })
+//   const arrive = ({ x, y }: { x: number; y: number }) => ({
+//     x,
+//     y,
+//     opacity: 1,
+//   })
+
+//   function SolidHandSilhouette({ color }: { color: string }) {
+//     // Professional hand icon silhouette (open palm with fingers and thumb clearly visible)
+//     return (
+//       <path
+//         d="M 40 85
+//           C 38 78 38 65 40 55
+//           C 41 45 42 35 45 28
+//           C 47 22 50 18 53 18
+//           C 55 18 56 20 55 25
+//           C 54 35 53 45 53 55
+//           L 58 20
+//           C 59 15 61 12 64 12
+//           C 67 12 68 15 67 22
+//           C 65 38 63 55 62 68
+//           L 70 18
+//           C 71 12 73 8 76 8
+//           C 79 8 81 12 80 20
+//           C 77 42 74 62 72 75
+//           L 80 25
+//           C 82 18 84 12 87 10
+//           C 90 8 92 12 91 22
+//           C 88 48 84 68 82 80
+//           C 88 82 92 80 92 75
+//           C 92 72 90 65 88 55
+//           C 87 48 86 40 86 35
+//           C 86 30 88 28 90 28
+//           C 93 28 95 32 96 38
+//           C 98 52 98 70 96 85
+//           C 96 92 90 96 82 96
+//           L 45 96
+//           C 38 96 40 92 40 85
+//           Z"
+//         fill={color}
+//         stroke="none"
+//         strokeLinejoin="round"
+//         strokeLinecap="round"
+//       />
+//     )
+//   }
+
+//   return (
+//     <div className="relative w-40 h-40 flex items-center justify-center shrink-0" aria-hidden>
+//       <svg viewBox="0 0 200 200" width="160" height="160" xmlns="http://www.w3.org/2000/svg">
+//         <defs>
+//           <filter id="hand-shadow" x="-50%" y="-50%" width="200%" height="200%">
+//             <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="rgba(0,0,0,0.12)" />
+//           </filter>
+//           <mask id="center-mask">
+//             <rect x="0" y="0" width="200" height="200" fill="white" />
+//             <circle cx="100" cy="100" r="26" fill="black" />
+//           </mask>
+//         </defs>
+
+//         {hands.slice(0, count).map((h, i) => (
+//           <motion.g
+//             key={h.name}
+//             initial={entry(h.start)}
+//             animate={arrive(h.end)}
+//             exit={entry(h.start)}
+//             transition={{ type: "spring", stiffness: 280, damping: 26, delay: h.delay }}
+//             style={{ transformOrigin: "100px 100px" }}
+//             filter="url(#hand-shadow)"
+//           >
+//             <g transform={`rotate(${h.rotate}, 100, 100) translate(100, 100) scale(1.08)`}>
+//               <SolidHandSilhouette color={h.color} />
+//             </g>
+//           </motion.g>
+//         ))}
+
+//         {/* Under-shadow for depth */}
+//         <circle cx="100" cy="100" r="30" fill="rgba(0,0,0,0.04)" />
+        
+//         {/* Center badge (masked by hand silhouettes) */}
+//         <g mask="url(#center-mask)">
+//           <circle cx="100" cy="100" r="28" fill="rgba(255,255,255,0.98)" stroke="rgba(0,0,0,0.08)" strokeWidth="2" filter="url(#hand-shadow)" />
+//         </g>
+        
+//         {/* Center number */}
+//         <text
+//           x="100"
+//           y="108"
+//           textAnchor="middle"
+//           dominantBaseline="middle"
+//           style={{ fontSize: 32, fontWeight: 900, fill: "#0f172a", letterSpacing: "0.08em" }}
+//         >
+//           {count}
+//         </text>
+//       </svg>
+//     </div>
+//   )
+// }
 
 // ─── PILL ─────────────────────────────────────────────────────────────────────
 function Pill({ color, selected, dimmed, onClick, topLabel, bottomLabel }: {
