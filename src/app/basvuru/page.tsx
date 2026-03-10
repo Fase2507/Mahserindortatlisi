@@ -159,16 +159,7 @@ function HandSynergy({ count }: { count: number }) {
           </motion.g>
         ))}
 
-        {/* Merkez Sayı - Transparan Alan */}
-        <circle cx="100" cy="100" r="28" fill="white" fillOpacity="0.05" />
-        <text
-          x="100" y="108"
-          textAnchor="middle"
-          dominantBaseline="middle"
-          style={{ fontSize: 34, fontWeight: 900, fill: "#1e293b", fontFamily: "sans-serif" }}
-        >
-          {count}
-        </text>
+        
       </svg>
     </div>
   );
